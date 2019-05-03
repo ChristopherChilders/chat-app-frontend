@@ -4,6 +4,7 @@ import './App.css';
 import axios from 'axios';
 import ChatList from './ChatList';
 import ChatForm from './ChatForm';
+import qs from 'qs';
 
 class App extends React.Component{
   constructor(props){
@@ -14,7 +15,7 @@ class App extends React.Component{
     };
   }
 
-  componentDidMount(){
+  async componentDidMount(){
 
     setInterval(async () => {
       const {data} = await axios.get('/api');
@@ -23,7 +24,7 @@ class App extends React.Component{
       // const response = await axios.get('/api');
       // console.log(response.data);
       this.setState({
-        messages:data
+        messages: data
       });
     }, 2000)
   }
@@ -38,12 +39,30 @@ class App extends React.Component{
     );
   }
 
-  _setText = () => {
+  _setText = (text) => {
     console.log('app _setText got called');
+    this.setState({
+      // text: text
+      text
+    })
+    console.log(this.state)
   }
 
-  _sendMessage = () => {
+  _sendMessage = async () => {
     console.log('app _sendMessage got called');
+    await axios({
+      method: 'post',
+      url: '/api',
+      data: qs.stringify({
+        message: this.state.text
+      }),
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
+    });
+    this.setState({
+      text: ''
+    })
   }
 }
 
